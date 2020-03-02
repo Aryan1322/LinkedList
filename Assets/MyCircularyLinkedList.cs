@@ -1,36 +1,44 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-namespace MLL
-
+namespace MCLL
 {
     public class MyCircularyLinkedList
     {
-        private Node headerNode;
-        private Node currentNode;
-        private Node lastNode;
-        
+        private NodeCircular headerNode;
+        private NodeCircular currentNode;
+
+
 
 
         public MyCircularyLinkedList(GameObject nodeItem)
         {
-            headerNode = new Node(nodeItem);
+            headerNode = new NodeCircular(nodeItem);
             currentNode = headerNode;
-            lastNode = headerNode;
+
+
+
+            currentNode.nextNode = currentNode;
+            currentNode.prevNode = currentNode;
+
+
         }
 
-
-        public bool isNextNodeNull()
+        public bool isCurrentNodeHeader()
         {
-            if (currentNode.nextNode != null)
-            {
-                return false;
-            }
-            else
+            if(headerNode == null)
             {
                 return true;
             }
+            else
+            {
+
+                return headerNode == currentNode;
+
+            }
+          
         }
+
 
         public GameObject PeekNext()
         {
@@ -59,16 +67,14 @@ namespace MLL
         {
             currentNode = headerNode;
         }
-
+        //hw
+        //check if current/header is null
+        //create node that links to itself, set current and header to new node
         public void Add(GameObject nodeItem)
         {
-            Node newNode = new Node(nodeItem);
+            NodeCircular newNode = new NodeCircular(nodeItem);
             newNode.nextNode = currentNode.nextNode;
-            if (newNode.nextNode == null)
-            {
-                lastNode = newNode;
-            }
-            else
+            if (newNode.nextNode != null)
             {
                 currentNode.nextNode.prevNode = newNode;
             }
@@ -79,44 +85,53 @@ namespace MLL
 
         public void AddPrev(GameObject nodeItem)
         {
-            Node newNode = new Node(nodeItem);
+            NodeCircular newNode = new NodeCircular(nodeItem);
             newNode.nextNode = currentNode;
             newNode.prevNode = currentNode.prevNode;
             if (currentNode.prevNode != null)
             {
                 currentNode.prevNode.nextNode = newNode;
             }
-            else
-            {
-                headerNode = newNode;
-            }
+
             currentNode.prevNode = newNode;
         }
 
 
-        public void AddToFirst(GameObject nodeItem)
+        /*public void AddToFirst(GameObject nodeItem)
         {
-            Node newFirstNode = new Node(nodeItem);
+            NodeCircular newFirstNode = new NodeCircular(nodeItem);
             newFirstNode.nextNode = headerNode;
             headerNode = newFirstNode;
             newFirstNode.prevNode = null;
-        }
+        }*/
 
         public void RemoveNext()
         {
-            Node nodeSkip = currentNode.nextNode;
+            if (currentNode == null)
+            {
+                return;
+            }
+            if (currentNode.nextNode == headerNode)
+            {
+                headerNode = currentNode;
+            }
+            if(currentNode.nextNode == currentNode)
+            {
+                currentNode = null;
+                headerNode = null;
+                return;
+            }
+            NodeCircular nodeSkip = currentNode.nextNode;
             if (nodeSkip != null)
             {
+
                 if (currentNode.nextNode.nextNode != null)
                 {
                     currentNode.nextNode = currentNode.nextNode.nextNode;
                     currentNode.nextNode.prevNode = currentNode;
                 }
-                else
-                {
-                    currentNode.nextNode = null;
-                    return;
-                }
+
+
 
                 nodeSkip.prevNode = null;
                 nodeSkip.nextNode = null;
@@ -128,24 +143,35 @@ namespace MLL
 
         public void RemovePrev()
         {
-            Node nodeSkip = currentNode.prevNode;
+
+            // check for null
+            if (currentNode == null)
+            {
+                return;
+            }
+            //change header
+            if (currentNode.prevNode == headerNode)
+            {
+                headerNode = currentNode;
+            }
+            if (currentNode.nextNode == currentNode)
+            {
+                currentNode = null;
+                headerNode = null;
+                return;
+            }
+
+            // remove perviuse node
+            NodeCircular nodeSkip = currentNode.prevNode;
             if (nodeSkip != null)
             {
-                if (currentNode.prevNode.prevNode != null)
-                {
-                    currentNode.prevNode = currentNode.prevNode.prevNode;
-                    currentNode.prevNode.nextNode = currentNode;
-                }
-                else
-                {
-                    currentNode.prevNode = null;
-                    return;
-                }
 
-                nodeSkip.prevNode = null;
-                nodeSkip.nextNode = null;
-                nodeSkip = null;
+                currentNode.prevNode = currentNode.prevNode.prevNode;
+                currentNode.prevNode.nextNode = currentNode;
             }
+            nodeSkip.prevNode = null;
+            nodeSkip.nextNode = null;
+            nodeSkip = null;
 
         }
 
@@ -187,14 +213,14 @@ namespace MLL
 
 
 
-    public class Node
+    public class NodeCircular
     {
-        public Node nextNode;
-        public Node prevNode;
+        public NodeCircular nextNode;
+        public NodeCircular prevNode;
 
         public GameObject nodeInformation;
 
-        public Node(GameObject nodeInfo)
+        public NodeCircular(GameObject nodeInfo)
         {
             nodeInformation = nodeInfo;
             nextNode = null;
@@ -204,4 +230,6 @@ namespace MLL
 
 
     }
+
+
 }
